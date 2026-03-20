@@ -1,0 +1,6 @@
+.env
+
+# Ignore Python bytecode files
+poetry.lock
+pyproject.toml
+venv/
