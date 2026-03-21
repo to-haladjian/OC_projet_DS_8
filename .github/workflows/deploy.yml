@@ -1,0 +1,78 @@
+name: Deploy to HuggingFace Spaces
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: pytest --tb=short -v
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install huggingface_hub
+        run: pip install huggingface_hub
+
+      - name: Upload to Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python3 - <<EOF
+          import os
+          from huggingface_hub import HfApi
+
+          api = HfApi()
+          repository_id = "torphinator/credit-scoring-api"
+          token = os.environ["HF_TOKEN"]
+
+          api.upload_folder(
+            folder_path=".",
+            path_in_repo=".",
+            repo_id=repository_id,
+            repo_type="space",
+            token=token,
+            ignore_patterns=[
+              "database/data/**",
+              "tests/**",
+              "notebooks/**",
+              "monitoring/**",
+              ".github/**",
+              "venv/**",
+              ".env",
+              "requirements-dev.txt",
+              ".gitignore",
+              "pyproject.toml",
+              "poetry.lock",
+              "pytest.ini",
+              "*.md",
+            ]
+          )
+
+          print("Deployment to Hugging Face Spaces completed successfully.")
+          EOF
