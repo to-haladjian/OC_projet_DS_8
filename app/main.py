@@ -5,7 +5,6 @@ import os
 
 import gradio as gr
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
 
 from app.core.config import API_VERSION
 from app.core.logging import setup_logging
@@ -21,14 +20,10 @@ app = FastAPI(
         "Receive applicant data, return credit approval decision."
     ),
     version=API_VERSION,
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json",
 )
-
-
-@app.get("/", include_in_schema=False)
-def root():
-    """Redirect root to API documentation."""
-    return RedirectResponse(url="/gradio")
-
 
 # Register routers
 from app.routers import health, prediction  # noqa: E402
@@ -36,12 +31,11 @@ from app.routers import health, prediction  # noqa: E402
 app.include_router(health.router, tags=["Health"])
 app.include_router(prediction.router, tags=["Credit Scoring"])
 
-# Mount Gradio UI
+# Mount Gradio UI at root so HF Space opens it directly
 from app.gradio_ui import demo  # noqa: E402
 
-app = gr.mount_gradio_app(app, demo, path="/gradio", root_path="/gradio")
+app = gr.mount_gradio_app(app, demo, path="/")
 
-# Database router (optional, only if DATABASE_URL is set)
 if os.getenv("DATABASE_URL"):
     logger.info("Database logging enabled (DATABASE_URL is set)")
 else:
