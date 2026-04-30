@@ -14,6 +14,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy the application code
 COPY app/ ./app/
+COPY database/ ./database/
 
 # Give ownership to non-root user
 RUN chown -R appuser:appuser /app
