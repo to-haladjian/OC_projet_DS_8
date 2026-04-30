@@ -22,7 +22,7 @@ app/
 ```bash
 # Installer les dépendances
 pip install -r requirements.txt
-pip install -r requirements-dev.txt
+pip install -r requirements-tests.txt
 
 # Configurer les variables d'environnement
 cp .env.example .env

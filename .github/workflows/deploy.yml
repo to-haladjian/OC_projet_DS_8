@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install -r requirements-tests.txt
 
       - name: Run tests
         run: pytest --tb=short -v
@@ -65,7 +65,7 @@ jobs:
               ".github/**",
               "venv/**",
               ".env",
-              "requirements-dev.txt",
+              "requirements-tests.txt",
               ".gitignore",
               "pyproject.toml",
               "poetry.lock",
