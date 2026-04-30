@@ -39,7 +39,7 @@ app.include_router(prediction.router, tags=["Credit Scoring"])
 # Mount Gradio UI
 from app.gradio_ui import demo  # noqa: E402
 
-app = gr.mount_gradio_app(app, demo, path="/gradio")
+app = gr.mount_gradio_app(app, demo, path="/gradio", root_path="/gradio")
 
 # Database router (optional, only if DATABASE_URL is set)
 if os.getenv("DATABASE_URL"):
