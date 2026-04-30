@@ -48,7 +48,7 @@ jobs:
           from huggingface_hub import HfApi
 
           api = HfApi()
-          repository_id = "torphinator/credit-scoring-api"
+          repository_id = "torphinator/credit_payback_scoring"
           token = os.environ["HF_TOKEN"]
 
           api.upload_folder(
