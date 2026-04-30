@@ -1,3 +1,13 @@
+---
+title: Credit Payback Scoring
+emoji: 🏦
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Credit Scoring API
 
 API de prédiction de défaut de remboursement de crédit, déployée sur HuggingFace Spaces.
