@@ -1,6 +1,6 @@
 SHELL:=/bin/bash -eu
 
-.PHONY: help tests tests-cov
+.PHONY: help test test-cov
 default: help
 
 ### Avaialble commands:
@@ -9,12 +9,12 @@ default: help
 help:
 	@cat $(MAKEFILE_LIST) | grep ^\#\#\#\
 
-### - make tests: Run all tests with pytest
-tests:
+### - make test: Run all tests with pytest
+test:
 	if [ ! -d "venv" ]; then echo "Creating venv..." && python3 -m venv venv; fi
 	@. venv/bin/activate && pip install -r requirements-tests.txt && pip install -r requirements.txt && pytest tests/ -v
 
-### - make tests-cov: Run all tests with pytest and generate coverage report
-tests-cov:
+### - make test-cov: Run all tests with pytest and generate coverage report
+test-cov:
 	if [ ! -d "venv" ]; then echo "Creating venv..." && python3 -m venv venv; fi
-	@. venv/bin/activate && pip install -r requirements-tests.txt && pip install -r requirements.txt && pytest tests/ --cov=app --cov-report=html:../docs/coverage --cov-report=term-missing | tee ../docs/coverage_report.txt
+	@. venv/bin/activate && pip install -r requirements-tests.txt && pip install -r requirements.txt && pytest tests/ --cov=app --cov-report=html:docs/coverage --cov-report=term-missing | tee docs/coverage_report.txt

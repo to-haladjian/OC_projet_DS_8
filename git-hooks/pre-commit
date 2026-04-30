@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Activate virtual environment if it exists
+if [ -d "venv" ]; then
+    source venv/bin/activate
+elif [ -d ".venv" ]; then
+    source .venv/bin/activate
+elif [ -d "env" ]; then
+    source env/bin/activate
+fi
+
+# Check if required dependencies are available
+if ! python3 -c "import fastapi" &> /dev/null; then
+    echo "FastAPI not found. Please run:"
+    echo "  python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
+    exit 1
+fi
+
+# Run tests with coverage
+make test-cov
+
+# Stage coverage report if it has changed
+if [[ ! -z $(git status --porcelain docs/coverage_report.txt) ]]; then
+    git add docs/coverage_report.txt
+    echo "✓ Coverage report updated and staged for commit"
+fi
+
+# Generate the OpenAPI schema
+python3 generate_openapi.py
+
+# Stage if the OpenAPI schema has changed
+if [[ ! -z $(git status --porcelain docs/churnPrediction_openapi.yaml) ]]; then
+    git add docs/churnPrediction_openapi.yaml
+    echo "✓ OpenAPI schema updated and staged for commit"
+fi
