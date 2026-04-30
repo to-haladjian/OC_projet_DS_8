@@ -27,7 +27,7 @@ app = FastAPI(
 @app.get("/", include_in_schema=False)
 def root():
     """Redirect root to API documentation."""
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url="/gradio")
 
 
 # Register routers
