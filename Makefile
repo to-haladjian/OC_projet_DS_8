@@ -1,4 +1,4 @@
-SHELL:=/bin/bash -eu
+SHELL:=/bin/bash -euo pipefail
 
 .PHONY: help test test-cov
 default: help

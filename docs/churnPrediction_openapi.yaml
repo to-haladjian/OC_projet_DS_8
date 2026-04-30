@@ -1,0 +1,361 @@
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    HealthResponse:
+      properties:
+        api_version:
+          title: Api Version
+          type: string
+        status:
+          title: Status
+          type: string
+        timestamp:
+          title: Timestamp
+          type: string
+      required:
+      - status
+      - api_version
+      - timestamp
+      title: HealthResponse
+      type: object
+    LoanApplicationInput:
+      description: 'Input features for credit scoring prediction.
+
+
+        Based on the Home Credit dataset application table.
+
+        Categorical features are passed as strings and encoded during preprocessing.'
+      properties:
+        amt_annuity:
+          description: Annuity amount of the loan
+          example: 24700.5
+          exclusiveMinimum: 0.0
+          title: Amt Annuity
+          type: number
+        amt_credit:
+          description: Credit amount of the loan
+          example: 406597.5
+          exclusiveMinimum: 0.0
+          title: Amt Credit
+          type: number
+        amt_goods_price:
+          anyOf:
+          - minimum: 0.0
+            type: number
+          - type: 'null'
+          description: Price of the goods for which the loan is given
+          example: 351000.0
+          title: Amt Goods Price
+        amt_income_total:
+          description: Total annual income of the applicant
+          example: 202500.0
+          exclusiveMinimum: 0.0
+          title: Amt Income Total
+          type: number
+        amt_req_credit_bureau_qrt:
+          anyOf:
+          - minimum: 0.0
+            type: number
+          - type: 'null'
+          description: Number of credit bureau enquiries in last quarter
+          example: 0.0
+          title: Amt Req Credit Bureau Qrt
+        application_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Unique application identifier (optional)
+          title: Application Id
+        cnt_fam_members:
+          default: 1.0
+          description: Number of family members
+          example: 2.0
+          minimum: 1.0
+          title: Cnt Fam Members
+          type: number
+        code_gender:
+          description: 'Gender: ''M'' or ''F'''
+          example: F
+          title: Code Gender
+          type: string
+        days_birth:
+          description: Age in days relative to application date (negative)
+          example: -9461
+          maximum: 0.0
+          title: Days Birth
+          type: integer
+        days_employed:
+          description: Days employed (negative = employed, 365243 = unemployed/retired)
+          example: -637
+          title: Days Employed
+          type: integer
+        days_id_publish:
+          anyOf:
+          - maximum: 0.0
+            type: integer
+          - type: 'null'
+          description: Days since ID was published (negative)
+          example: -2120
+          title: Days Id Publish
+        days_last_phone_change:
+          anyOf:
+          - maximum: 0.0
+            type: number
+          - type: 'null'
+          description: Days since last phone change (negative)
+          example: -1134.0
+          title: Days Last Phone Change
+        days_registration:
+          anyOf:
+          - maximum: 0.0
+            type: number
+          - type: 'null'
+          description: Days since registration (negative)
+          example: -3648.0
+          title: Days Registration
+        def_30_cnt_social_circle:
+          anyOf:
+          - minimum: 0.0
+            type: number
+          - type: 'null'
+          description: Number of 30 DPD defaults in social circle
+          example: 0.0
+          title: Def 30 Cnt Social Circle
+        ext_source_2:
+          anyOf:
+          - maximum: 1.0
+            minimum: 0.0
+            type: number
+          - type: 'null'
+          description: Normalized external data source 2 score
+          example: 0.262949
+          title: Ext Source 2
+        ext_source_3:
+          anyOf:
+          - maximum: 1.0
+            minimum: 0.0
+            type: number
+          - type: 'null'
+          description: Normalized external data source 3 score
+          example: 0.139376
+          title: Ext Source 3
+        flag_document_3:
+          anyOf:
+          - maximum: 1.0
+            minimum: 0.0
+            type: integer
+          - type: 'null'
+          description: Whether document 3 was provided
+          example: 1
+          title: Flag Document 3
+        flag_own_car:
+          description: 'Owns a car: ''Y'' or ''N'''
+          example: N
+          title: Flag Own Car
+          type: string
+        floorsmax_avg:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Average max floors of the building
+          example: 0.0833
+          title: Floorsmax Avg
+        name_contract_type:
+          description: 'Type of loan: ''Cash loans'' or ''Revolving loans'''
+          example: Cash loans
+          title: Name Contract Type
+          type: string
+        name_education_type:
+          description: Education level (e.g. 'Higher education', 'Secondary / secondary
+            special')
+          example: Secondary / secondary special
+          title: Name Education Type
+          type: string
+        name_family_status:
+          description: Family status (e.g. 'Married', 'Single / not married')
+          example: Married
+          title: Name Family Status
+          type: string
+        obs_30_cnt_social_circle:
+          anyOf:
+          - minimum: 0.0
+            type: number
+          - type: 'null'
+          description: Number of observable 30 DPD defaults in social circle
+          example: 2.0
+          title: Obs 30 Cnt Social Circle
+        organization_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Type of organization where client works
+          example: Business Entity Type 3
+          title: Organization Type
+        reg_city_not_live_city:
+          anyOf:
+          - maximum: 1.0
+            minimum: 0.0
+            type: integer
+          - type: 'null'
+          description: 1 if registration city differs from living city
+          example: 0
+          title: Reg City Not Live City
+        region_population_relative:
+          anyOf:
+          - minimum: 0.0
+            type: number
+          - type: 'null'
+          description: Normalized population of region where client lives
+          example: 0.018801
+          title: Region Population Relative
+        region_rating_client_w_city:
+          anyOf:
+          - maximum: 3.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          description: Rating of the region (1=best, 3=worst)
+          example: 2
+          title: Region Rating Client W City
+        totalarea_mode:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Total area mode of the building
+          example: 0.0149
+          title: Totalarea Mode
+        years_beginexpluatation_medi:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Years since building exploitation started (median)
+          example: 0.9851
+          title: Years Beginexpluatation Medi
+      required:
+      - name_contract_type
+      - amt_income_total
+      - amt_credit
+      - amt_annuity
+      - code_gender
+      - flag_own_car
+      - name_family_status
+      - name_education_type
+      - days_birth
+      - days_employed
+      title: LoanApplicationInput
+      type: object
+    PredictionResponse:
+      description: Response schema for credit scoring prediction.
+      properties:
+        api_version:
+          title: Api Version
+          type: string
+        application_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Application Id
+        credit_approved:
+          description: Whether the credit application is approved (probability < threshold)
+          title: Credit Approved
+          type: boolean
+        default_probability:
+          description: Probability that the applicant will default on the loan
+          title: Default Probability
+          type: number
+        timestamp:
+          title: Timestamp
+          type: string
+      required:
+      - api_version
+      - timestamp
+      - default_probability
+      - credit_approved
+      title: PredictionResponse
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+info:
+  description: API for predicting loan default probability. Receive applicant data,
+    return credit approval decision.
+  title: Credit Scoring API
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /health:
+    get:
+      description: Returns the API status, version, and current timestamp.
+      operationId: health_health_get
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                api_version: 1.0.0
+                status: healthy
+                timestamp: '2026-03-21T12:00:00+00:00'
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+          description: API is healthy
+      summary: Check API health
+      tags:
+      - Health
+  /predict:
+    post:
+      description: Predict whether a loan applicant will default on their loan. Returns
+        the default probability and approval decision.
+      operationId: predict_predict_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanApplicationInput'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Predict credit default
+      tags:
+      - Credit Scoring

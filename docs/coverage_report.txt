@@ -1,0 +1,36 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.0.2, pluggy-1.6.0
+rootdir: /home/oshagan/OpenClassrooms/8 - Confirmez vos compétences en MLOps (Partie 2)
+configfile: pytest.ini
+plugins: Faker-40.15.0, cov-7.1.0, anyio-4.12.1
+collected 11 items
+
+tests/test_health.py ..                                                  [ 18%]
+tests/test_prediction.py .....                                           [ 63%]
+tests/test_schemas.py ....                                               [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.5-final-0 ________________
+
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+app/__init__.py                          0      0   100%
+app/core/__init__.py                     0      0   100%
+app/core/config.py                       2      0   100%
+app/core/logging.py                     17      0   100%
+app/gradio_ui.py                        39      6    85%   25-53
+app/main.py                             22      2    91%   30, 46
+app/routers/__init__.py                  0      0   100%
+app/routers/health.py                    8      0   100%
+app/routers/prediction.py               19      0   100%
+app/schemas/__init__.py                  0      0   100%
+app/schemas/credit.py                   38      0   100%
+app/schemas/health.py                    5      0   100%
+app/services/__init__.py                 0      0   100%
+app/services/db_service.py              21     12    43%   22-34, 39-49
+app/services/prediction_service.py      20      0   100%
+app/services/preprocessing.py           43      0   100%
+------------------------------------------------------------------
+TOTAL                                  234     20    91%
+Coverage HTML written to dir docs/coverage
+============================== 11 passed in 0.30s ==============================
