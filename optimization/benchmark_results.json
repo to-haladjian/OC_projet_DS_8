@@ -1,0 +1,29 @@
+{
+  "iterations": 1000,
+  "warmup": 50,
+  "speedup_onnx_over_sklearn": 209.8,
+  "artifact_sizes_kb": {
+    "baseline_lgbm.pkl": 2930.9,
+    "model.onnx": 2004.5
+  },
+  "backends": [
+    {
+      "backend": "sklearn LightGBM",
+      "iterations": 1000,
+      "mean_ms": 1.9302,
+      "p50_ms": 1.5526,
+      "p95_ms": 4.5764,
+      "p99_ms": 6.8453,
+      "throughput_rps": 518.09
+    },
+    {
+      "backend": "ONNX Runtime",
+      "iterations": 1000,
+      "mean_ms": 0.0092,
+      "p50_ms": 0.0089,
+      "p95_ms": 0.0098,
+      "p99_ms": 0.0199,
+      "throughput_rps": 108444.61
+    }
+  ]
+}

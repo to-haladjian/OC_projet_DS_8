@@ -61,3 +61,6 @@ database/data/
 # Misc
 .cache/
 *.log
+
+# Profiling artifacts (regenerable)
+optimization/profile.prof
