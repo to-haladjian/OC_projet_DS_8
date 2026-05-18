@@ -4,11 +4,13 @@ import logging
 import os
 
 import gradio as gr
+from dotenv import load_dotenv
 from fastapi import FastAPI
 
 from app.core.config import API_VERSION
 from app.core.logging import setup_logging
 
+load_dotenv()
 setup_logging()
 
 logger = logging.getLogger(__name__)
