@@ -23,22 +23,13 @@ _preprocessor = joblib.load(PREPROCESSOR_PATH)
 _feature_list = pd.read_csv(FEATURE_LIST_PATH)["feature"].tolist()
 
 
-def preprocess_application(application_data: dict) -> tuple[int | None, np.ndarray]:
-    """Preprocess raw application data for model inference.
+def build_feature_dataframe(application_data: dict) -> pd.DataFrame:
+    """Map raw API input to the 100-feature DataFrame expected by the model.
 
-    The preprocessing pipeline (SimpleImputer + StandardScaler) was fitted
-    on the 100 selected features from the training data. Missing features
-    (aggregations from auxiliary tables) are imputed with training medians.
-
-    Args:
-        application_data: Raw features from the API request.
-
-    Returns:
-        (application_id, processed_feature_array)
+    Aggregation features absent from the API payload are left as NaN; the
+    preprocessing pipeline will impute them at scaling time. Returned frame
+    shares its column order with the training reference set.
     """
-    application_id = application_data.pop("application_id", None)
-
-    # Build a DataFrame with all 100 features, defaulting to NaN
     row = {feature: np.nan for feature in _feature_list}
 
     # --- Map raw application input to model features ---
@@ -105,13 +96,24 @@ def preprocess_application(application_data: dict) -> tuple[int | None, np.ndarr
         row["ANNUITY_INCOME_PERC"] = amt_annuity / amt_income
         row["INCOME_PER_PERSON"] = amt_income / max(cnt_fam, 1)
 
-    # Create DataFrame in the correct feature order
     df = pd.DataFrame([row], columns=_feature_list)
+    return df.replace([np.inf, -np.inf], np.nan)
 
-    # Replace inf values with NaN
-    df = df.replace([np.inf, -np.inf], np.nan)
 
-    # Apply preprocessing pipeline (impute NaN → median, then scale)
+def preprocess_application(application_data: dict) -> tuple[int | None, np.ndarray]:
+    """Preprocess raw application data for model inference.
+
+    The preprocessing pipeline (SimpleImputer + StandardScaler) was fitted
+    on the 100 selected features from the training data. Missing features
+    (aggregations from auxiliary tables) are imputed with training medians.
+
+    Args:
+        application_data: Raw features from the API request.
+
+    Returns:
+        (application_id, processed_feature_array)
+    """
+    application_id = application_data.pop("application_id", None)
+    df = build_feature_dataframe(application_data)
     processed = _preprocessor.transform(df)
-
     return application_id, processed.astype(np.float32)
