@@ -22,14 +22,14 @@ The free tier is sufficient for this project (500 MB database, 50 000 monthly ac
 
 ## 2. Grab the connection string
 
-1. In the project, open **Settings → Database**.
-2. Scroll to **Connection string** and pick the **URI** tab.
-3. There are two URIs:
-   - **Session pooler** (port 5432) — use this for long-lived processes (local dev, scripts).
-   - **Transaction pooler** (port 6543) — use this for serverless/short-lived workers (Hugging Face Spaces, GitHub Actions).
-4. Replace `[YOUR-PASSWORD]` in the URI with the password from step 1.
+1. In the project dashboard, click the **Connect** button at the top of the page. A modal opens with the available connection methods.
+2. In the modal, switch between the modes using the selector at the top:
+   - **Session pooler** (port 5432) — use this for long-lived processes (local dev, scripts, the dashboard).
+   - **Transaction pooler** (port 6543) — use this for serverless/short-lived workers (Hugging Face Spaces).
+   - **Direct connection** (port 5432) — fine for one-off SQL clients; not recommended for the API because it doesn't survive Supabase's IPv6 networking on most hosts.
+3. Copy the **URI** value displayed for the selected mode and replace `[YOUR-PASSWORD]` with the password from step 1.
 
-> **Screenshot #2 — Connection string panel**: capture the Settings → Database page with the URI tabs visible (password redacted in the screenshot). Save as `docs/screenshots/02_connection_string.png`.
+> **Screenshot #2 — Connect modal**: capture the Connect modal with the Session pooler URI visible (password redacted in the screenshot). Save as `docs/screenshots/02_connection_string.png`.
 
 ---
 
@@ -89,9 +89,11 @@ You should see `0`.
 The fastest way to populate rows for the screenshots is to fire the running API. Start the API locally with the `DATABASE_URL` set:
 
 ```bash
-export $(grep -v '^#' .env | xargs)
+set -a; source .env; set +a   # robust: handles @, ?, # in the password
 uvicorn app.main:app --port 7860
 ```
+
+On startup the API should log `Database logging enabled (DATABASE_URL is set)`. If you see `disabled`, run `echo "$DATABASE_URL"` — if empty, the `.env` line probably has stray quotes or a `=` inside the password that needs URL-encoding (see the table in step 3 of the main setup).
 
 Then in another terminal, send ~20 predictions with varied inputs:
 
