@@ -15,42 +15,52 @@ API de prédiction de défaut de remboursement de crédit, déployée sur Huggin
 ## Architecture
 
 ```
-app/
-├── main.py              # FastAPI + Gradio mount
-├── artefacts/           # model.onnx + preprocessor.joblib
-├── core/                # Config, structured JSON logging
+app/                     # API : FastAPI + Gradio
+├── main.py              # Entrée FastAPI, montage Gradio
+├── artefacts/           # model.onnx, preprocessor.joblib, feature_list.csv
+├── core/                # Config, logging JSON structuré
 ├── routers/             # /health, /predict
-├── schemas/             # Pydantic input/output validation
-├── services/            # Preprocessing, ONNX inference, DB logging
-└── gradio_ui.py         # Interface Gradio
+├── schemas/             # Validation Pydantic (entrées/sorties)
+├── services/            # Preprocessing, inférence ONNX, persistance DB
+└── gradio_ui.py         # UI Gradio (28 champs)
+
+database/                # Modèles SQLAlchemy + session (Supabase / PostgreSQL)
+monitoring/              # drift_detection.py + dashboard.py (Streamlit) + reference_data.csv
+optimization/            # cProfile + benchmark sklearn vs ONNX
+notebooks/               # 03_drift_analysis.ipynb (analyse drift narrée)
+docs/                    # OpenAPI, rapport d'optimisation, guide Supabase, drift_report.html
+tests/                   # pytest (11 tests, 92% coverage)
+.github/workflows/       # ci.yml (tests) + deploy.yml (HF Spaces)
 ```
 
-**Stack** : FastAPI + Gradio | ONNX Runtime | PostgreSQL (Supabase) | Evidently AI | Docker | GitHub Actions
+**Stack** : FastAPI + Gradio | ONNX Runtime | PostgreSQL (Supabase) | Evidently AI | Streamlit | Docker | GitHub Actions
 
 ## Setup local
 
 ```bash
-# Installer les dépendances
+# Dépendances
 pip install -r requirements.txt
 pip install -r requirements-tests.txt
 
-# Configurer les variables d'environnement
+# Variables d'environnement (optionnel : DATABASE_URL pour la persistance)
 cp .env.example .env
-# Editer .env avec vos credentials Supabase (optionnel)
 
 # Lancer l'API
 uvicorn app.main:app --reload --port 7860
 ```
 
-- Swagger : http://localhost:7860/docs
-- Gradio : http://localhost:7860/gradio
-- Health : http://localhost:7860/health
+- Gradio UI : <http://localhost:7860/>
+- Swagger : <http://localhost:7860/api/docs>
+- ReDoc : <http://localhost:7860/api/redoc>
+- Health : <http://localhost:7860/health>
 
 ## Tests
 
 ```bash
 pytest -v
 ```
+
+11 tests, 92% de couverture. Couverture HTML générée dans `docs/coverage/`.
 
 ## Docker
 
@@ -61,18 +71,59 @@ docker run -p 7860:7860 credit-scoring
 
 ## CI/CD
 
-- **CI** (`.github/workflows/ci.yml`) : tests automatiques sur push `dev`/`main`
-- **Deploy** (`.github/workflows/deploy.yml`) : deploy vers HuggingFace Spaces sur push `main`
+- **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) — pytest sur chaque push/PR vers `main` ou `dev`.
+- **Deploy** ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) — sur push `main`, rejoue les tests puis upload le dépôt vers le HuggingFace Space `torphinator/credit_payback_scoring`.
 
-Secrets GitHub requis : `HF_TOKEN`
+Secret GitHub requis : `HF_TOKEN`.
 
 ## Monitoring
 
-- **Logging structuré JSON** : chaque prédiction loggée (input, output, temps d'exécution)
-- **Supabase PostgreSQL** : stockage des logs de prédiction (si `DATABASE_URL` configuré)
-- **Drift detection** : Evidently AI (`monitoring/drift_detection.py`)
-- **Notebooks d'analyse** : `notebooks/03_drift_analysis.ipynb`
+### Logs et stockage
+- **JSON structuré** : chaque prédiction logue input, probabilité, décision, latence (`app/core/logging.py`).
+- **Supabase PostgreSQL** : persistance des prédictions quand `DATABASE_URL` est défini (`app/services/db_service.py`). Voir [`docs/supabase_setup.md`](docs/supabase_setup.md) pour la mise en place du free tier + DDL + screenshots à capturer.
+
+### Dashboard Streamlit
+
+KPIs (volume, taux d'approbation, latence p50/p95), distributions, série temporelle, et rapport de drift Evidently à la demande.
+
+```bash
+pip install -r requirements-monitoring.txt
+streamlit run monitoring/dashboard.py
+```
+
+Le dossier `monitoring/` est exclu de l'image Docker HF Spaces (`deploy.yml` `ignore_patterns`), donc Streamlit n'alourdit pas le déploiement.
+
+### Drift detection
+- Notebook narré : [`notebooks/03_drift_analysis.ipynb`](notebooks/03_drift_analysis.ipynb).
+- Rapport Evidently rendu : [`docs/drift_report.html`](docs/drift_report.html).
+- Module réutilisable : `monitoring/drift_detection.py` (référence : `monitoring/reference_data.csv`).
+
+## Optimisation
+
+Profil cProfile + benchmark sklearn LightGBM (baseline Part 1) vs ONNX Runtime (production).
+
+```bash
+python optimization/profile_inference.py   # écrit optimization/profile.prof
+python optimization/benchmark.py            # écrit optimization/benchmark_results.json
+```
+
+Conclusions et chiffres : [`docs/optimization_report.md`](docs/optimization_report.md).
 
 ## RGPD
 
 Les données stockées sont des features numériques/catégorielles anonymisées du dataset Home Credit. Aucune donnée personnelle identifiable n'est collectée.
+
+## Livrables — mission OpenClassrooms
+
+| Livrable | Fichier(s) |
+| --- | --- |
+| Historique Git | branche `dev` (10+ commits), branche `main` (release) |
+| API fonctionnelle | [`app/main.py`](app/main.py), [`app/routers/prediction.py`](app/routers/prediction.py), [`app/gradio_ui.py`](app/gradio_ui.py) |
+| Tests unitaires | [`tests/`](tests/), 11 tests / 92% coverage |
+| Dockerfile | [`Dockerfile`](Dockerfile) |
+| Pipeline CI/CD | [`.github/workflows/ci.yml`](.github/workflows/ci.yml), [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) |
+| Stockage données de production | [`app/services/db_service.py`](app/services/db_service.py), [`database/models/prediction_log.py`](database/models/prediction_log.py), guide [`docs/supabase_setup.md`](docs/supabase_setup.md), screenshots `docs/screenshots/` |
+| Analyse du Data Drift | [`notebooks/03_drift_analysis.ipynb`](notebooks/03_drift_analysis.ipynb), [`docs/drift_report.html`](docs/drift_report.html), [`monitoring/drift_detection.py`](monitoring/drift_detection.py) |
+| Dashboard / rapport de monitoring | [`monitoring/dashboard.py`](monitoring/dashboard.py) (Streamlit) |
+| Rapport d'optimisation | [`docs/optimization_report.md`](docs/optimization_report.md), [`optimization/benchmark.py`](optimization/benchmark.py), [`optimization/profile_inference.py`](optimization/profile_inference.py) |
+| Documentation | ce README + [`docs/`](docs/) |
