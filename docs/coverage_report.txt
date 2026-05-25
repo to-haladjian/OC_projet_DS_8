@@ -17,9 +17,9 @@ Name                                 Stmts   Miss  Cover   Missing
 app/__init__.py                          0      0   100%
 app/core/__init__.py                     0      0   100%
 app/core/config.py                       2      0   100%
-app/core/logging.py                     17      0   100%
+app/core/logging.py                     37      4    89%   36, 43, 54-55
 app/gradio_ui.py                        61      6    90%   41-85
-app/main.py                             20      1    95%   44
+app/main.py                             22      1    95%   47
 app/routers/__init__.py                  0      0   100%
 app/routers/health.py                    8      0   100%
 app/routers/prediction.py               19      0   100%
@@ -31,6 +31,6 @@ app/services/db_service.py              21      8    62%   20, 33-34, 39-49
 app/services/prediction_service.py      20      0   100%
 app/services/preprocessing.py           72      4    94%   36, 38, 40, 43
 ------------------------------------------------------------------
-TOTAL                                  290     19    93%
+TOTAL                                  312     23    93%
 Coverage HTML written to dir docs/coverage
-============================== 11 passed in 0.96s ==============================
+============================== 11 passed in 0.67s ==============================

@@ -80,6 +80,27 @@ select count(*) from public.prediction_logs;
 
 You should see `0`.
 
+## Application logs table
+
+Application logs (the structured JSON lines emitted by the API) are persisted to
+`app_logs` so they survive Hugging Face Space restarts. The app auto-creates this
+table on startup when `DATABASE_URL` is set, so you usually do not need to run
+anything here — the SQL below is the equivalent for manual setup or reference:
+
+```sql
+create table if not exists public.app_logs (
+  id         bigserial primary key,
+  timestamp  timestamptz not null default now(),
+  level      text,
+  module     text,
+  message    text,
+  context    jsonb
+);
+
+create index if not exists app_logs_timestamp_idx
+  on public.app_logs (timestamp desc);
+```
+
 > **Screenshot #3 — Table editor**: open **Table Editor → prediction_logs**, capture the columns view (showing the 7 columns and their types). Save as `docs/screenshots/03_table_schema.png`.
 
 ---

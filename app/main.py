@@ -39,6 +39,9 @@ from app.gradio_ui import demo  # noqa: E402
 app = gr.mount_gradio_app(app, demo, path="/")
 
 if os.getenv("DATABASE_URL"):
+    from database.db_session import init_db  # noqa: E402
+
+    init_db()  # create app_logs / prediction_logs if missing
     logger.info("Database logging enabled (DATABASE_URL is set)")
 else:
     logger.info("Database logging disabled (DATABASE_URL not set)")
