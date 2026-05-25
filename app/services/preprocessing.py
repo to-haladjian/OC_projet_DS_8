@@ -19,10 +19,6 @@ ARTEFACTS_DIR = Path(__file__).parent.parent / "artefacts"
 PREPROCESSOR_PATH = ARTEFACTS_DIR / "preprocessor.joblib"
 FEATURE_LIST_PATH = ARTEFACTS_DIR / "feature_list.csv"
 
-# Sentinel DAYS_EMPLOYED value the model was trained on for clients with no
-# employment (unemployed / pensioners) — used when no employment date is given.
-DAYS_EMPLOYED_UNEMPLOYED = 365243
-
 # Load preprocessor and feature list once at startup
 _preprocessor = joblib.load(PREPROCESSOR_PATH)
 _feature_list = pd.read_csv(FEATURE_LIST_PATH)["feature"].tolist()
@@ -71,9 +67,10 @@ def build_feature_dataframe(application_data: dict) -> pd.DataFrame:
 
     # --- Map raw application input to model features ---
 
-    # Binary-encoded features (factorized in Part 1: first seen value = 0)
-    # CODE_GENDER: F=0, M=1 (factorize order from training data)
-    gender_map = {"F": 0, "M": 1}
+    # Binary-encoded features (pd.factorize in Part 1: first value seen = 0).
+    # In application_train.csv (after dropping XNA) the first rows are M then F,
+    # and N then Y, so the training encodings are M=0/F=1 and N=0/Y=1.
+    gender_map = {"M": 0, "F": 1}
     row["CODE_GENDER"] = gender_map.get(application_data.get("code_gender"), np.nan)
 
     # FLAG_OWN_CAR: N=0, Y=1
@@ -129,12 +126,12 @@ def build_feature_dataframe(application_data: dict) -> pd.DataFrame:
         if days is not None:
             row[model_feat] = days
 
-    # DAYS_EMPLOYED: a missing employment date means unemployed/retired, which
-    # the model represents with the 365243 sentinel rather than a negative span.
+    # DAYS_EMPLOYED: a missing employment date means unemployed/retired. Part 1
+    # replaced the raw 365243 sentinel with NaN before fitting the pipeline, so
+    # leaving it NaN here lets the imputer fill the same training median.
     employment_days = _days_before(application_data.get("employment_start_date"), today)
-    row["DAYS_EMPLOYED"] = (
-        employment_days if employment_days is not None else DAYS_EMPLOYED_UNEMPLOYED
-    )
+    if employment_days is not None:
+        row["DAYS_EMPLOYED"] = employment_days
 
     # Engineered features (computed from raw input)
     amt_income = application_data.get("amt_income_total", 0)

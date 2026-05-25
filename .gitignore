@@ -68,3 +68,6 @@ optimization/profile.prof
 # Claude Code local state
 .agents/
 skills-lock.json
+
+# Derived feature cache from scripts/build_features.py
+data_cache/
