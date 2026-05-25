@@ -16,7 +16,7 @@ fi
 # Activate virtual environment and install dependencies
 echo "Installing dependencies..."
 source venv/bin/activate
-pip install -r requirements.txt && pip install -r requirements-tests.txt
+pip install -r requirements.txt && pip install -r requirements-tests.txt && pip install -r requirements-monitoring.txt
 echo "✓ Dependencies installed"
 
 echo "Setup complete!"
