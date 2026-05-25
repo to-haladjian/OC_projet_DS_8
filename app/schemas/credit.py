@@ -7,9 +7,10 @@ The API accepts the application-level features. Aggregated features are
 imputed with training median values during preprocessing.
 """
 
+from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class LoanApplicationInput(BaseModel):
@@ -78,32 +79,46 @@ class LoanApplicationInput(BaseModel):
         json_schema_extra={"example": 2.0},
     )
 
-    # --- Time-based features ---
-    days_birth: int = Field(
-        ..., le=0,
-        description="Age in days relative to application date (negative)",
-        json_schema_extra={"example": -9461},
-    )
-    days_employed: int = Field(
+    # --- Time-based features (real-world dates; converted to the model's
+    # "days relative to application date" convention during preprocessing) ---
+    birth_date: date = Field(
         ...,
-        description="Days employed (negative = employed, 365243 = unemployed/retired)",
-        json_schema_extra={"example": -637},
+        description="Applicant's date of birth (must be in the past)",
+        json_schema_extra={"example": "1986-04-20"},
     )
-    days_registration: Optional[float] = Field(
-        default=None, le=0,
-        description="Days since registration (negative)",
-        json_schema_extra={"example": -3648.0},
+    employment_start_date: Optional[date] = Field(
+        default=None,
+        description="Date current employment started; omit if unemployed/retired",
+        json_schema_extra={"example": "2022-08-01"},
     )
-    days_id_publish: Optional[int] = Field(
-        default=None, le=0,
-        description="Days since ID was published (negative)",
-        json_schema_extra={"example": -2120},
+    registration_date: Optional[date] = Field(
+        default=None,
+        description="Date of registration (must be in the past)",
+        json_schema_extra={"example": "2014-06-15"},
     )
-    days_last_phone_change: Optional[float] = Field(
-        default=None, le=0,
-        description="Days since last phone change (negative)",
-        json_schema_extra={"example": -1134.0},
+    id_publish_date: Optional[date] = Field(
+        default=None,
+        description="Date the ID document was issued (must be in the past)",
+        json_schema_extra={"example": "2017-09-30"},
     )
+    last_phone_change_date: Optional[date] = Field(
+        default=None,
+        description="Date of last phone change (must be in the past)",
+        json_schema_extra={"example": "2021-11-05"},
+    )
+
+    @field_validator(
+        "birth_date",
+        "employment_start_date",
+        "registration_date",
+        "id_publish_date",
+        "last_phone_change_date",
+    )
+    @classmethod
+    def _reject_future_dates(cls, value: Optional[date]) -> Optional[date]:
+        if value is not None and value > date.today():
+            raise ValueError("date must not be in the future")
+        return value
 
     # --- External data scores ---
     ext_source_2: Optional[float] = Field(

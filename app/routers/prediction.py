@@ -28,7 +28,9 @@ router = APIRouter()
 def predict(application: LoanApplicationInput):
     start = time.perf_counter()
 
-    features = application.model_dump()
+    # mode="json" serializes date fields to ISO strings so they survive both
+    # preprocessing and the JSON prediction-log column.
+    features = application.model_dump(mode="json")
     application_id, default_probability, credit_approved = predict_credit_default(features)
 
     elapsed_ms = (time.perf_counter() - start) * 1000

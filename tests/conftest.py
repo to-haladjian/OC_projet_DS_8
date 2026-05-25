@@ -40,8 +40,8 @@ def valid_payload():
         "amt_annuity": 24700.5,
         "amt_goods_price": 351000.0,
         "cnt_fam_members": 2.0,
-        "days_birth": -9461,
-        "days_employed": -637,
+        "birth_date": "1986-04-20",
+        "employment_start_date": "2022-08-01",
         "ext_source_2": 0.262949,
         "ext_source_3": 0.139376,
     }

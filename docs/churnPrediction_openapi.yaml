@@ -74,6 +74,12 @@ components:
           - type: 'null'
           description: Unique application identifier (optional)
           title: Application Id
+        birth_date:
+          description: Applicant's date of birth (must be in the past)
+          example: '1986-04-20'
+          format: date
+          title: Birth Date
+          type: string
         cnt_fam_members:
           default: 1.0
           description: Number of family members
@@ -86,41 +92,6 @@ components:
           example: F
           title: Code Gender
           type: string
-        days_birth:
-          description: Age in days relative to application date (negative)
-          example: -9461
-          maximum: 0.0
-          title: Days Birth
-          type: integer
-        days_employed:
-          description: Days employed (negative = employed, 365243 = unemployed/retired)
-          example: -637
-          title: Days Employed
-          type: integer
-        days_id_publish:
-          anyOf:
-          - maximum: 0.0
-            type: integer
-          - type: 'null'
-          description: Days since ID was published (negative)
-          example: -2120
-          title: Days Id Publish
-        days_last_phone_change:
-          anyOf:
-          - maximum: 0.0
-            type: number
-          - type: 'null'
-          description: Days since last phone change (negative)
-          example: -1134.0
-          title: Days Last Phone Change
-        days_registration:
-          anyOf:
-          - maximum: 0.0
-            type: number
-          - type: 'null'
-          description: Days since registration (negative)
-          example: -3648.0
-          title: Days Registration
         def_30_cnt_social_circle:
           anyOf:
           - minimum: 0.0
@@ -129,6 +100,14 @@ components:
           description: Number of 30 DPD defaults in social circle
           example: 0.0
           title: Def 30 Cnt Social Circle
+        employment_start_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          description: Date current employment started; omit if unemployed/retired
+          example: '2022-08-01'
+          title: Employment Start Date
         ext_source_2:
           anyOf:
           - maximum: 1.0
@@ -168,6 +147,22 @@ components:
           description: Average max floors of the building
           example: 0.0833
           title: Floorsmax Avg
+        id_publish_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          description: Date the ID document was issued (must be in the past)
+          example: '2017-09-30'
+          title: Id Publish Date
+        last_phone_change_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          description: Date of last phone change (must be in the past)
+          example: '2021-11-05'
+          title: Last Phone Change Date
         name_contract_type:
           description: 'Type of loan: ''Cash loans'' or ''Revolving loans'''
           example: Cash loans
@@ -225,6 +220,14 @@ components:
           description: Rating of the region (1=best, 3=worst)
           example: 2
           title: Region Rating Client W City
+        registration_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          description: Date of registration (must be in the past)
+          example: '2014-06-15'
+          title: Registration Date
         totalarea_mode:
           anyOf:
           - type: number
@@ -248,8 +251,7 @@ components:
       - flag_own_car
       - name_family_status
       - name_education_type
-      - days_birth
-      - days_employed
+      - birth_date
       title: LoanApplicationInput
       type: object
     PredictionResponse:

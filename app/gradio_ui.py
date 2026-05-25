@@ -1,5 +1,7 @@
 """Gradio interface for credit scoring predictions."""
 
+from datetime import date, timedelta
+
 import gradio as gr
 
 from app.services.prediction_service import predict_credit_default
@@ -17,11 +19,11 @@ def make_prediction(
     amt_annuity,
     amt_goods_price,
     cnt_fam_members,
-    days_birth,
-    days_employed,
-    days_registration,
-    days_id_publish,
-    days_last_phone_change,
+    birth_date,
+    employment_start_date,
+    registration_date,
+    id_publish_date,
+    last_phone_change_date,
     ext_source_2,
     ext_source_3,
     region_population_relative,
@@ -48,11 +50,13 @@ def make_prediction(
         "amt_annuity": float(amt_annuity),
         "amt_goods_price": float(amt_goods_price) if amt_goods_price is not None else None,
         "cnt_fam_members": float(cnt_fam_members),
-        "days_birth": int(days_birth),
-        "days_employed": int(days_employed),
-        "days_registration": float(days_registration) if days_registration is not None else None,
-        "days_id_publish": int(days_id_publish) if days_id_publish is not None else None,
-        "days_last_phone_change": float(days_last_phone_change) if days_last_phone_change is not None else None,
+        # Real-world dates; preprocessing converts them to the model's
+        # "days relative to today" convention. None = unset (unemployed for jobs).
+        "birth_date": birth_date,
+        "employment_start_date": employment_start_date,
+        "registration_date": registration_date,
+        "id_publish_date": id_publish_date,
+        "last_phone_change_date": last_phone_change_date,
         "ext_source_2": float(ext_source_2) if ext_source_2 is not None else None,
         "ext_source_3": float(ext_source_3) if ext_source_3 is not None else None,
         "region_population_relative": float(region_population_relative) if region_population_relative is not None else None,
@@ -147,9 +151,7 @@ _ORGANIZATION_TYPES = [
 with gr.Blocks(title="Credit Scoring") as demo:
     gr.Markdown("# Credit Scoring - Loan Default Prediction")
     gr.Markdown(
-        "Enter the applicant's information to predict loan repayment risk. "
-        "Defaults are set to training-data medians. "
-        "Optional fields improve accuracy; missing values are imputed from training data."
+        "Enter the applicant's information to predict loan repayment risk."
     )
 
     with gr.Row():
@@ -224,26 +226,37 @@ with gr.Blocks(title="Credit Scoring") as demo:
 
     with gr.Row():
         with gr.Column():
-            gr.Markdown("### Time-based Features")
-            days_birth = gr.Number(
-                label="Days Birth — negative",
-                value=-15750,
+            gr.Markdown("### Key Dates")
+            _today = date.today()
+            birth_date = gr.DateTime(
+                label="Date of Birth",
+                include_time=False,
+                type="datetime",
+                value=(_today - timedelta(days=15750)).isoformat(),
             )
-            days_employed = gr.Number(
-                label="Days Employed — negative or 365 243 if unemployed",
-                value=-1213,
+            employment_start_date = gr.DateTime(
+                label="Employment Start Date — leave empty if unemployed/retired",
+                include_time=False,
+                type="datetime",
+                value=(_today - timedelta(days=1213)).isoformat(),
             )
-            days_registration = gr.Number(
-                label="Days Since Registration — negative, optional",
-                value=-4504.0,
+            registration_date = gr.DateTime(
+                label="Registration Date — optional",
+                include_time=False,
+                type="datetime",
+                value=(_today - timedelta(days=4504)).isoformat(),
             )
-            days_id_publish = gr.Number(
-                label="Days Since ID Published — negative, optional",
-                value=-3254,
+            id_publish_date = gr.DateTime(
+                label="ID Issue Date — optional",
+                include_time=False,
+                type="datetime",
+                value=(_today - timedelta(days=3254)).isoformat(),
             )
-            days_last_phone_change = gr.Number(
-                label="Days Since Last Phone Change — negative, optional",
-                value=-757.0,
+            last_phone_change_date = gr.DateTime(
+                label="Last Phone Change Date — optional",
+                include_time=False,
+                type="datetime",
+                value=(_today - timedelta(days=757)).isoformat(),
             )
 
         with gr.Column():
@@ -324,11 +337,11 @@ with gr.Blocks(title="Credit Scoring") as demo:
             amt_annuity,
             amt_goods_price,
             cnt_fam_members,
-            days_birth,
-            days_employed,
-            days_registration,
-            days_id_publish,
-            days_last_phone_change,
+            birth_date,
+            employment_start_date,
+            registration_date,
+            id_publish_date,
+            last_phone_change_date,
             ext_source_2,
             ext_source_3,
             region_population_relative,
