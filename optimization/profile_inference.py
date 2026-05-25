@@ -1,10 +1,5 @@
 """Profile the end-to-end ONNX prediction pipeline with cProfile.
 
-Run:
-    python optimization/profile_inference.py
-
-Writes a binary profile to optimization/profile.prof (inspect with snakeviz or
-`python -m pstats`) and prints the top callees by cumulative time.
 """
 
 from __future__ import annotations
@@ -18,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.services.prediction_service import predict_credit_default  # noqa: E402
+from app.services.prediction_service import predict_credit_default 
 
 ITERATIONS = 1000
 OUTPUT_PROFILE = Path(__file__).parent / "profile.prof"
