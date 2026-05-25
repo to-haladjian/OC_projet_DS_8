@@ -5,7 +5,8 @@ import os
 
 import gradio as gr
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 from app.core.config import API_VERSION
 from app.core.logging import setup_logging
@@ -26,6 +27,13 @@ app = FastAPI(
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
 )
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    """Return a clean 500 instead of leaking a stack trace to the client."""
+    logger.exception("Unhandled error processing %s %s", request.method, request.url.path)
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+
 
 # Register routers
 from app.routers import health, prediction  # noqa: E402

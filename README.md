@@ -29,7 +29,7 @@ monitoring/              # drift_detection.py + dashboard.py (Streamlit) + refer
 optimization/            # cProfile + benchmark sklearn vs ONNX
 notebooks/               # 03_drift_analysis.ipynb (analyse drift narrée)
 docs/                    # OpenAPI, rapport d'optimisation, guide Supabase, drift_report.html
-tests/                   # pytest (11 tests, 92% coverage)
+tests/                   # pytest (37 tests, 93% coverage)
 .github/workflows/       # ci.yml (tests) + deploy.yml (HF Spaces)
 ```
 
@@ -60,7 +60,7 @@ uvicorn app.main:app --reload --port 7860
 pytest -v
 ```
 
-11 tests, 92% de couverture. Couverture HTML générée dans `docs/coverage/`.
+37 tests, 93% de couverture. Couverture HTML générée dans `docs/coverage/`.
 
 ## Docker
 
@@ -80,7 +80,8 @@ Secret GitHub requis : `HF_TOKEN`.
 
 ### Logs et stockage
 - **JSON structuré** : chaque prédiction logue input, probabilité, décision, latence (`app/core/logging.py`).
-- **Supabase PostgreSQL** : persistance des prédictions quand `DATABASE_URL` est défini (`app/services/db_service.py`). Voir [`docs/supabase_setup.md`](docs/supabase_setup.md) pour la mise en place du free tier + DDL + screenshots à capturer.
+- **Persistance Supabase PostgreSQL** (quand `DATABASE_URL` est défini) : prédictions dans `prediction_logs` (`app/services/db_service.py`) et logs applicatifs dans `app_logs` (`SupabaseLogHandler`), pour survivre aux redémarrages éphémères des HF Spaces. Voir [`docs/supabase_setup.md`](docs/supabase_setup.md) pour le free tier + DDL + screenshots à capturer.
+- **Gestion des erreurs** : validation Pydantic (422), écritures DB/logs fail-safe (jamais bloquantes), et handler global renvoyant un 500 JSON propre sans fuite de stack trace (`app/main.py`).
 
 ### Dashboard Streamlit
 
@@ -119,7 +120,7 @@ Les données stockées sont des features numériques/catégorielles anonymisées
 | --- | --- |
 | Historique Git | branche `dev` (10+ commits), branche `main` (release) |
 | API fonctionnelle | [`app/main.py`](app/main.py), [`app/routers/prediction.py`](app/routers/prediction.py), [`app/gradio_ui.py`](app/gradio_ui.py) |
-| Tests unitaires | [`tests/`](tests/), 11 tests / 92% coverage |
+| Tests unitaires | [`tests/`](tests/), 37 tests / 93% coverage |
 | Dockerfile | [`Dockerfile`](Dockerfile) |
 | Pipeline CI/CD | [`.github/workflows/ci.yml`](.github/workflows/ci.yml), [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) |
 | Stockage données de production | [`app/services/db_service.py`](app/services/db_service.py), [`database/models/prediction_log.py`](database/models/prediction_log.py), guide [`docs/supabase_setup.md`](docs/supabase_setup.md), screenshots `docs/screenshots/` |

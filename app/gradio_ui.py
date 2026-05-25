@@ -4,6 +4,7 @@ from datetime import date, timedelta
 
 import gradio as gr
 
+from app.core.config import OPTIMAL_THRESHOLD
 from app.services.prediction_service import predict_credit_default
 
 
@@ -79,7 +80,7 @@ def make_prediction(
     result = (
         f"## Decision: <span style='color:{color}'>{decision}</span>\n\n"
         f"**Default Probability:** {default_probability:.2%}\n\n"
-        f"**Threshold:** 8.74%\n\n"
+        f"**Threshold:** {OPTIMAL_THRESHOLD:.2%}\n\n"
         f"**Credit Approved:** {'Yes' if credit_approved else 'No'}"
     )
     return result
