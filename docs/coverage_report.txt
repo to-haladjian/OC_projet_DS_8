@@ -20,8 +20,8 @@ app/__init__.py                          0      0   100%
 app/core/__init__.py                     0      0   100%
 app/core/config.py                       2      0   100%
 app/core/logging.py                     37      3    92%   43, 54-55
-app/gradio_ui.py                        61      6    90%   41-85
-app/main.py                             22      1    95%   47
+app/gradio_ui.py                        62      6    90%   42-86
+app/main.py                             27      3    89%   34-35, 55
 app/routers/__init__.py                  0      0   100%
 app/routers/health.py                    8      0   100%
 app/routers/prediction.py               19      0   100%
@@ -33,6 +33,6 @@ app/services/db_service.py              21      8    62%   20, 33-34, 39-49
 app/services/prediction_service.py      20      0   100%
 app/services/preprocessing.py           72      2    97%   40, 43
 ------------------------------------------------------------------
-TOTAL                                  312     20    94%
+TOTAL                                  318     22    93%
 Coverage HTML written to dir docs/coverage
-============================== 37 passed in 1.76s ==============================
+============================== 37 passed in 1.39s ==============================
